@@ -147,6 +147,11 @@
 (auto-fill-mode 1)
 (setq org-src-fontify-natively t)
 (setq org-support-shift-select t)
+(setq org-todo-keyword-faces
+      '(("TODO[All]"    . "LightSalmon")
+        ("TODO[Felix]"  . "CadetBlue")
+        ("TODO[Jonas]"  . "pink3")
+        ("TODO[Marcus]" . "MediumSeaGreen")))
 
 ;; Agenda & Calendar
 (add-hook 'calendar-load-hook
