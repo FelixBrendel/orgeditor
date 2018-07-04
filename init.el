@@ -5,6 +5,8 @@
 (set-selection-coding-system 'utf-8)
 (prefer-coding-system 'utf-8)
 
+(add-to-list 'load-path "~/.emacs.d/auto-load/")
+(require 'redo+)
 ;; package business
 (require 'package)
 (load-library "url-handlers")
@@ -21,6 +23,7 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(use-package magit :ensure t)
 (use-package diff-hl
   :ensure t
   :config
@@ -151,6 +154,8 @@
   (org-agenda arg "n" "buffer"))
 
 (with-eval-after-load 'org
+  (define-key org-mode-map (kbd "C-a") 'mark-whole-buffer)
+  (define-key org-mode-map (kbd "C-y") 'redo)
   (define-key org-mode-map (kbd "<f2>") 'org-agenda-show-agenda-and-todo))
 
 
@@ -165,6 +170,8 @@
 
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'save-some-buffers)
+(global-set-key (kbd "C-a") 'mark-whole-buffer)
+(global-set-key (kbd "C-y") 'redo)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
@@ -192,4 +199,4 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (atom-one-dark-theme use-package org-bullets diff-hl))))
+    (magit atom-one-dark-theme use-package org-bullets diff-hl))))
