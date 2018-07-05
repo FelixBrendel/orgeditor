@@ -57,20 +57,57 @@
    (set-face-attribute
    'tabbar-separator nil
    :height 0.7)
-  (setq tabbar-buffer-groups-function
-        (lambda ()
-          (list "All")))
 
-  (setq
-              tabbar-scroll-left-help-function nil ;don't show help information
-              tabbar-scroll-right-help-function nil
-              tabbar-help-on-tab-function nil
-              tabbar-home-help-function nil
-              tabbar-buffer-home-button (quote (("") "")) ;don't show tabbar button
-              tabbar-scroll-left-button (quote (("") ""))
-              tabbar-scroll-right-button (quote (("") "")))
+   (setq
+    tabbar-scroll-left-help-function nil ;don't show help information
+    tabbar-scroll-right-help-function nil
+    tabbar-help-on-tab-function nil
+    tabbar-home-help-function nil
+    tabbar-buffer-home-button (quote (("") "")) ;don't show tabbar button
+    tabbar-scroll-left-button (quote (("") ""))
+    tabbar-scroll-right-button (quote (("") "")))
 
-  (tabbar-mode 1))
+   (tabbar-mode)
+   (defun tabbar-buffer-groups ()
+     "Returns the list of group names the current buffer belongs to."
+     (list
+      (cond
+
+       ;; ADD RULES TO SPLIT BUFFERS IN GROUPS HERE!
+       ((member (buffer-name)
+                '("*scratch*" "*Messages*" "*Help*" "diary"))
+        "Special Buffers" ;; this is a group name
+        )
+       ((string-match "^magit" (buffer-name))
+        "Magit Buffers"
+        )
+       ;; if buffer is not grouped by the rules you would add above
+       ;; put it in the "General" group:
+       (t
+        "General"
+        )))))
+
+
+;; Add a buffer modification state indicator in the tab label, and place a
+;; space around the label to make it looks less crowd.
+(defadvice tabbar-buffer-tab-label (after fixup_tab_label_space_and_flag activate)
+  (setq ad-return-value
+        (if (and (buffer-modified-p (tabbar-tab-value tab))
+                 (buffer-file-name (tabbar-tab-value tab)))
+            (concat " + " (concat ad-return-value " "))
+          (concat " " (concat ad-return-value " ")))))
+;; Called each time the modification state of the buffer changed.
+(defun ztl-modification-state-change ()
+  (tabbar-set-template tabbar-current-tabset nil)
+  (tabbar-display-update))
+;; First-change-hook is called BEFORE the change is made.
+(defun ztl-on-buffer-modification ()
+  (set-buffer-modified-p t)
+  (ztl-modification-state-change))
+(add-hook 'after-save-hook 'ztl-modification-state-change)
+;; This doesn't work for revert, I don't know.
+;;(add-hook 'after-revert-hook 'ztl-modification-state-change)
+(add-hook 'first-change-hook 'ztl-on-buffer-modification)
 
 (defvar my/tabbar-left "/" "Separator on left side of tab")
 (defvar my/tabbar-right "\\" "Separator on right side of tab")
@@ -322,7 +359,9 @@
  '(default ((t (:family "Cousine" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
  '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
  '(org-level-2 ((t (:inherit outline-2 :height 1.5))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.3)))))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.3))))
+ '(tabbar-modified ((t (:inherit tabbar-default :foreground "green" :box nil))))
+ '(tabbar-selected-modified ((t (:inherit tabbar-default :foreground "green")))))
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -330,4 +369,6 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (tabbar ivy magit atom-one-dark-theme use-package org-bullets diff-hl))))
+    (tabbar ivy magit atom-one-dark-theme use-package org-bullets diff-hl)))
+ '(tabbar-mode t nil (tabbar))
+ '(tabbar-mwheel-mode t nil (tabbar)))
