@@ -24,101 +24,15 @@
   (package-install 'use-package))
 
 (use-package magit :ensure t)
-(use-package ivy :ensure t :config (ivy-mode 1))
+(use-package ivy :ensure t :config
+  (ivy-mode 1)
+  (setq ivy-on-del-error-function #'ignore))
 (use-package powerline :ensure t)
 (powerline-default-theme)
 
-(use-package tabbar :ensure t :config
-  ;; (set-face-attribute
-  ;;  'tabbar-default nil
-  ;;  :background "gray60")
- (set-face-attribute
-   'tabbar-unselected nil
-   :background "#282C34"
-   :foreground "gray30"
-   :box nil)
-  (set-face-attribute
-   'tabbar-selected nil
-   :background "#282C34"
-   :foreground "white"
-   :box nil)
-   (set-face-attribute
-    'tabbar-button nil
-    :box '(:line-width 1 :color "#282C34" :style released-button :underline
-                       nil))
-   (set-face-attribute
-    'tabbar-default nil
-    :background "#21252B")
-   (set-face-attribute
-    'tabbar-highlight nil
-    :foreground "white"
-    :box nil
-    :underline nil)
-   (set-face-attribute
-   'tabbar-separator nil
-   :height 0.7)
 
-   (setq
-    tabbar-scroll-left-help-function nil ;don't show help information
-    tabbar-scroll-right-help-function nil
-    tabbar-help-on-tab-function nil
-    tabbar-home-help-function nil
-    tabbar-buffer-home-button (quote (("") "")) ;don't show tabbar button
-    tabbar-scroll-left-button (quote (("") ""))
-    tabbar-scroll-right-button (quote (("") "")))
-
-   (tabbar-mode)
-   (defun tabbar-buffer-groups ()
-     "Returns the list of group names the current buffer belongs to."
-     (list
-      (cond
-
-       ;; ADD RULES TO SPLIT BUFFERS IN GROUPS HERE!
-       ((member (buffer-name)
-                '("*scratch*" "*Messages*" "*Help*" "diary"))
-        "Special Buffers" ;; this is a group name
-        )
-       ((string-match "^magit" (buffer-name))
-        "Magit Buffers"
-        )
-       ;; if buffer is not grouped by the rules you would add above
-       ;; put it in the "General" group:
-       (t
-        "General"
-        )))))
-
-
-;; Add a buffer modification state indicator in the tab label, and place a
-;; space around the label to make it looks less crowd.
-(defadvice tabbar-buffer-tab-label (after fixup_tab_label_space_and_flag activate)
-  (setq ad-return-value
-        (if (and (buffer-modified-p (tabbar-tab-value tab))
-                 (buffer-file-name (tabbar-tab-value tab)))
-            (concat " + " (concat ad-return-value " "))
-          (concat " " (concat ad-return-value " ")))))
-;; Called each time the modification state of the buffer changed.
-(defun ztl-modification-state-change ()
-  (tabbar-set-template tabbar-current-tabset nil)
-  (tabbar-display-update))
-;; First-change-hook is called BEFORE the change is made.
-(defun ztl-on-buffer-modification ()
-  (set-buffer-modified-p t)
-  (ztl-modification-state-change))
-(add-hook 'after-save-hook 'ztl-modification-state-change)
-;; This doesn't work for revert, I don't know.
-;;(add-hook 'after-revert-hook 'ztl-modification-state-change)
-(add-hook 'first-change-hook 'ztl-on-buffer-modification)
-
-(defvar my/tabbar-left "/" "Separator on left side of tab")
-(defvar my/tabbar-right "\\" "Separator on right side of tab")
-(defun my/tabbar-tab-label-function (tab)
-  (powerline-render (list my/tabbar-left
-                          (format " %s  " (car tab))
-                          my/tabbar-right)))
-(with-eval-after-load 'powerline
-  (setq my/tabbar-left  (powerline-wave-right 'tabbar-default nil 24))
-  (setq my/tabbar-right (powerline-wave-left nil 'tabbar-default 24))
-  (setq tabbar-tab-label-function #'my/tabbar-tab-label-function))
+(load-file "~/.emacs.d/tabbar.el")
+(load-file "~/.emacs.d/org+calendar.el")
 
 (use-package diff-hl
   :ensure t
@@ -236,72 +150,6 @@
 (setq frame-title-format '("" "Emacs - %b"))
 (set-default 'truncate-lines t)
 
-;; Text/org editing
-(setq-default fill-column 80)
-(auto-fill-mode 1)
-(setq org-src-fontify-natively t)
-(setq org-support-shift-select t)
-(setq org-todo-keyword-faces
-      '(("TODO[All]"    . "LightSalmon")
-        ("TODO[Felix]"  . "CadetBlue")
-        ("TODO[Jonas]"  . "pink3")
-        ("TODO[Marcus]" . "MediumSeaGreen")))
-
-;; fix flyspell add word to dict
-(defun flyspell-buffer-after-pdict-save (&rest _)
-  (flyspell-buffer))
-
-(setq flyspell-issue-message-flag nil)
-(advice-add 'ispell-pdict-save :after #'flyspell-buffer-after-pdict-save)
-
-;; Agenda & Calendar
-(add-hook 'calendar-load-hook
-          (lambda ()
-            (calendar-set-date-style 'european)))
-
-(setq calendar-week-start-day 1
-          calendar-day-name-array ["Sonntag" "Montag" "Dienstag" "Mittwoch"
-                                   "Donnerstag" "Freitag" "Samstag"]
-          calendar-month-name-array ["Januar" "Februar" "März" "April" "Mai"
-                                     "Juni" "Juli" "August" "September"
-                                     "Oktober" "November" "Dezember"])
-(setq solar-n-hemi-seasons
-      '("Frühlingsanfang" "Sommeranfang" "Herbstanfang" "Winteranfang"))
-
-(setq holiday-general-holidays
-      '((holiday-fixed 1 1 "Neujahr")
-        (holiday-fixed 5 1 "1. Mai")
-        (holiday-fixed 10 3 "Tag der Deutschen Einheit")))
-
-;; Feiertage für Bayern, weitere auskommentiert
-(setq holiday-christian-holidays
-      '((holiday-float 12 0 -4 "1. Advent" 24)
-        (holiday-float 12 0 -3 "2. Advent" 24)
-        (holiday-float 12 0 -2 "3. Advent" 24)
-        (holiday-float 12 0 -1 "4. Advent" 24)
-        (holiday-fixed 12 25 "1. Weihnachtstag")
-        (holiday-fixed 12 26 "2. Weihnachtstag")
-        (holiday-fixed 1 6 "Heilige Drei Könige")
-        (holiday-easter-etc -48 "Rosenmontag")
-        (holiday-easter-etc -3 "Gründonnerstag")
-        (holiday-easter-etc  -2 "Karfreitag")
-        (holiday-easter-etc   0 "Ostersonntag")
-        (holiday-easter-etc  +1 "Ostermontag")
-        (holiday-easter-etc +39 "Christi Himmelfahrt")
-        (holiday-easter-etc +49 "Pfingstsonntag")
-        (holiday-easter-etc +50 "Pfingstmontag")
-        (holiday-easter-etc +60 "Fronleichnam")
-        (holiday-fixed 8 15 "Mariae Himmelfahrt")
-        (holiday-fixed 11 1 "Allerheiligen")
-        (holiday-float 11 3 1 "Buss- und Bettag" 16)
-        (holiday-float 11 0 1 "Totensonntag" 20)))
-
-(setq holiday-bahai-holidays nil)
-(setq holiday-hebrew-holidays nil)
-(setq holiday-islamic-holidays nil)
-(setq org-agenda-include-diary t)
-
-
 ;; Disable recursive edits when cursor leaves
 (defun stop-using-minibuffer ()
   "kill the minibuffer"
@@ -335,6 +183,7 @@
 (global-set-key (kbd "C-f") 'isearch-forward)
 (define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
 
+(global-set-key (kbd "<S-down-mouse-1>") 'mouse-save-then-kill) ;; Extend selectin by shift clicking
 (global-set-key (kbd "C-s") 'save-buffer)
 (global-set-key (kbd "C-S-s") 'save-some-buffers)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
@@ -346,7 +195,6 @@
 (global-set-key (kbd "C-S-g") 'abort-recursive-edit)
 
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-
 (global-unset-key (kbd "ESC ESC ESC"))
 (global-unset-key (kbd "<f2> <f2>"))
 (global-unset-key (kbd "<mouse-3>"))
@@ -359,16 +207,4 @@
  '(default ((t (:family "Cousine" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
  '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
  '(org-level-2 ((t (:inherit outline-2 :height 1.5))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.3))))
- '(tabbar-modified ((t (:inherit tabbar-default :foreground "green" :box nil))))
- '(tabbar-selected-modified ((t (:inherit tabbar-default :foreground "green")))))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (tabbar ivy magit atom-one-dark-theme use-package org-bullets diff-hl)))
- '(tabbar-mode t nil (tabbar))
- '(tabbar-mwheel-mode t nil (tabbar)))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.3)))))
