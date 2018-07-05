@@ -24,12 +24,71 @@
   (package-install 'use-package))
 
 (use-package magit :ensure t)
+(use-package ivy :ensure t :config (ivy-mode 1))
+(use-package powerline :ensure t)
+(powerline-default-theme)
+
+(use-package tabbar :ensure t :config
+  ;; (set-face-attribute
+  ;;  'tabbar-default nil
+  ;;  :background "gray60")
+ (set-face-attribute
+   'tabbar-unselected nil
+   :background "#282C34"
+   :foreground "gray30"
+   :box nil)
+  (set-face-attribute
+   'tabbar-selected nil
+   :background "#282C34"
+   :foreground "white"
+   :box nil)
+   (set-face-attribute
+    'tabbar-button nil
+    :box '(:line-width 1 :color "#282C34" :style released-button :underline
+                       nil))
+   (set-face-attribute
+    'tabbar-default nil
+    :background "#21252B")
+   (set-face-attribute
+    'tabbar-highlight nil
+    :foreground "white"
+    :box nil
+    :underline nil)
+   (set-face-attribute
+   'tabbar-separator nil
+   :height 0.7)
+  (setq tabbar-buffer-groups-function
+        (lambda ()
+          (list "All")))
+
+  (setq
+              tabbar-scroll-left-help-function nil ;don't show help information
+              tabbar-scroll-right-help-function nil
+              tabbar-help-on-tab-function nil
+              tabbar-home-help-function nil
+              tabbar-buffer-home-button (quote (("") "")) ;don't show tabbar button
+              tabbar-scroll-left-button (quote (("") ""))
+              tabbar-scroll-right-button (quote (("") "")))
+
+  (tabbar-mode 1))
+
+(defvar my/tabbar-left "/" "Separator on left side of tab")
+(defvar my/tabbar-right "\\" "Separator on right side of tab")
+(defun my/tabbar-tab-label-function (tab)
+  (powerline-render (list my/tabbar-left
+                          (format " %s  " (car tab))
+                          my/tabbar-right)))
+(with-eval-after-load 'powerline
+  (setq my/tabbar-left  (powerline-wave-right 'tabbar-default nil 24))
+  (setq my/tabbar-right (powerline-wave-left nil 'tabbar-default 24))
+  (setq tabbar-tab-label-function #'my/tabbar-tab-label-function))
+
 (use-package diff-hl
   :ensure t
   :config
   (global-diff-hl-mode t)
   (diff-hl-flydiff-mode t)
-
+  (setq diff-hl-fringe-bmp-function (lambda (&rest _ignore) 'empty-line))
   ;; Workaround for displaying correctly in other window
   (use-package frame
     :defer t
@@ -43,13 +102,11 @@
       ;; `smyx-theme`.
       (setq window-divider-default-right-width 1) ;Default 6
       (window-divider-mode 1))))
+
 (use-package org-bullets :ensure t)
 (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 (use-package atom-one-dark-theme :ensure t)
 (load-theme 'atom-one-dark t)
-(use-package telephone-line :ensure t)
-(setq telephone-line-height 20)
-(telephone-line-mode 1)
 
 ;; Don't litter the direcory with backup files but keep them in another folder
 (setq backup-directory-alist `(("." . "~/.emacs-saves")))
@@ -140,7 +197,7 @@
 (auto-save-mode -1)
 (tool-bar-mode -1)
 (setq frame-title-format '("" "Emacs - %b"))
-(setq truncate-lines 1)
+(set-default 'truncate-lines t)
 
 ;; Text/org editing
 (setq-default fill-column 80)
@@ -152,6 +209,13 @@
         ("TODO[Felix]"  . "CadetBlue")
         ("TODO[Jonas]"  . "pink3")
         ("TODO[Marcus]" . "MediumSeaGreen")))
+
+;; fix flyspell add word to dict
+(defun flyspell-buffer-after-pdict-save (&rest _)
+  (flyspell-buffer))
+
+(setq flyspell-issue-message-flag nil)
+(advice-add 'ispell-pdict-save :after #'flyspell-buffer-after-pdict-save)
 
 ;; Agenda & Calendar
 (add-hook 'calendar-load-hook
@@ -219,6 +283,12 @@
   (define-key org-mode-map (kbd "C-y") 'redo)
   (define-key org-mode-map (kbd "<f2>") 'org-agenda-show-agenda-and-todo))
 
+(with-eval-after-load 'org-agenda
+  (define-key org-agenda-mode-map (kbd "<mouse-1>") 'org-agenda-goto-mouse))
+
+(with-eval-after-load 'flyspell
+  (define-key flyspell-mouse-map (kbd "<mouse-3>") 'flyspell-correct-word))
+
 (defadvice find-file-read-args (around find-file-read-args-always-use-dialog-box act)
   "Simulate invoking menu item as if by the mouse; see `use-dialog-box'."
   (let ((last-nonmenu-event nil))
@@ -242,6 +312,7 @@
 
 (global-unset-key (kbd "ESC ESC ESC"))
 (global-unset-key (kbd "<f2> <f2>"))
+(global-unset-key (kbd "<mouse-3>"))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -259,4 +330,4 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (magit atom-one-dark-theme use-package org-bullets diff-hl))))
+    (tabbar ivy magit atom-one-dark-theme use-package org-bullets diff-hl))))
