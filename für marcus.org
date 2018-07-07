@@ -1,0 +1,69 @@
+(setq mac-option-modifier nil
+      mac-command-modifier 'meta
+      x-select-enable-clipboard t)
+
+(setq mac-command-modifier 'control)
+(setq mac-allow-anti-aliasing t)
+
+(global-set-key "\M-(" (lambda () (interactive) (insert "{")))
+(global-set-key "\M-)" (lambda () (interactive) (insert "}")))
+
+(global-set-key "\M-8" (lambda () (interactive) (insert "[")))
+(global-set-key "\M-9" (lambda () (interactive) (insert "]")))
+
+FÜR ASPELL
+(setq ispell-program-name "/opt/local/bin/aspell")
+(setq ispell-list-command "--list")
+
+brew install aspell --with-lang-de
+
+
+
+FÜR HUNSPELL
+
+Install hunspell library and tools
+$ brew install hunspell
+Download dictionaries from http://wordlist.aspell.net/dicts/ and put them to /Library/Spelling/.
+
+Check that hunspell is able to load them:
+
+$ hunspell -D
+
+LOADED DICTIONARY:
+/Library/Spelling/en_US.aff
+/Library/Spelling/en_US.dic
+
+
+To check if the dictionary is listed in the path run hunspell -D. It should output something along those lines:
+
+...
+/usr/share/hunspell/en_US
+/usr/share/hunspell/de_BE
+/usr/share/hunspell/de_LU
+/usr/share/hunspell/de_DE
+...
+
+Next, add your preferred dictionaries to ispell-local-dictionary-alist in your .emacs file
+
+#+BEGIN_SRC emacs-lisp
+(add-to-list 'ispell-local-dictionary-alist '("deutsch-hunspell"
+                                              "[[:alpha:]]"
+                                              "[^[:alpha:]]"
+                                              "[']"
+                                              t
+                                              ("-d" "de_DE"); Dictionary file name
+                                              nil
+                                              iso-8859-1))
+
+(add-to-list 'ispell-local-dictionary-alist '("english-hunspell"
+                                              "[[:alpha:]]"
+                                              "[^[:alpha:]]"
+                                              "[']"
+                                              t
+                                              ("-d" "en_US")
+                                              nil
+                                              iso-8859-1))
+
+(setq ispell-program-name "hunspell"          ; Use hunspell to correct mistakes
+      ispell-dictionary   "deutsch-hunspell") ; Default dictionary to use
+#+END_SRC
