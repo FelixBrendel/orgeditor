@@ -2,6 +2,14 @@
   - To write the keybindings in a short way, C is used as CTRL and S for SHIFT
   - For example [C-c] means CRTL c
   - ↔ stands for the arrowkey, left and right; ↕ means up and down
+
+|-------+------------+---------------------------|
+| Key   | Where      | Action                    |
+|-------+------------+---------------------------|
+| [C-w] | Everywhere | Kill the buffer / tab     |
+| [C-q] | Everywhere | Kill the active subwindow |
+|-------+------------+---------------------------|
+
 ** Org
 |-------+----------------------------+------------------------------------------------|
 | Key   | Where                      | Action                                         |
@@ -33,4 +41,8 @@
 |-------+--------------+---------------------------------------|
 | [q]   | Everywhere   | Abort, and close                      |
 | Click | On TODO item | Navigate to that item in the org file |
+| [m d] | In calendar  | Show only the current day             |
+| [m w] | In calendar  | Show the current week                 |
+| [m m] | In calendar  | Show the current month                |
+| [m y] | In calendar  | Show the whole year                   |
 |-------+--------------+---------------------------------------|

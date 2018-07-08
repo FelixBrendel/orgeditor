@@ -195,6 +195,8 @@
 (global-set-key (kbd "C-S-s") 'save-some-buffers)
 (global-set-key (kbd "C-a") 'mark-whole-buffer)
 (global-set-key (kbd "C-y") 'redo)
+(global-set-key (kbd "C-w") (lambda() (interactive) (kill-buffer)))
+(global-set-key (kbd "C-q") 'delete-window)
 (global-set-key (kbd "C-+") 'text-scale-increase)
 (global-set-key (kbd "C--") 'text-scale-decrease)
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
