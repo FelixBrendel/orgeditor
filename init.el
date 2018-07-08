@@ -65,7 +65,8 @@
 (setq delete-old-versions t
       kept-new-versions 6
       kept-old-versions 2
-      version-control t)
+      version-control t
+      create-lockfiles nil)
 
 ;; Srcolling
 (setq mouse-wheel-scroll-amount '(3 ((shift) . 1))) ;; one line at a time
@@ -135,7 +136,6 @@
 
 (add-hook 'before-save-hook 'untabify-except-makefiles)
 
-
 ;; Misc
 (global-auto-revert-mode t) ;; always show the latest version of every file
 (setq visible-bell nil ring-bell-function #'ignore) ;; Never ring the bell
@@ -155,8 +155,7 @@
   "kill the minibuffer"
   (when (and (>= (recursion-depth) 1) (active-minibuffer-window))
     (abort-recursive-edit)))
-(add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
-
+;; (add-hook 'mouse-leave-buffer-hook 'stop-using-minibuffer)
 
 ;; Additional shortcuts
 (defun org-agenda-show-agenda-and-todo (&optional arg)
@@ -166,7 +165,11 @@
 (with-eval-after-load 'org
   (define-key org-mode-map (kbd "C-a") 'mark-whole-buffer)
   (define-key org-mode-map (kbd "C-y") 'redo)
+  (define-key org-mode-map (kbd "C-d") 'org-deadline)
   (define-key org-mode-map (kbd "<f2>") 'org-agenda-show-agenda-and-todo))
+
+(with-eval-after-load 'with-editor
+  (define-key with-editor-mode-map (kbd "C-s") 'with-editor-finish))
 
 (with-eval-after-load 'org-agenda
   (define-key org-agenda-mode-map (kbd "<mouse-1>") 'org-agenda-goto-mouse))
@@ -193,6 +196,10 @@
 (global-set-key (kbd "<C-wheel-up>") 'text-scale-increase)
 (global-set-key (kbd "<C-wheel-down>") 'text-scale-decrease)
 (global-set-key (kbd "C-S-g") 'abort-recursive-edit)
+
+(global-set-key (kbd "<f1>") (lambda() (interactive)(find-file-other-frame "~/.emacs.d/help.org")))
+(global-set-key (kbd "<f3>") 'magit-status)
+
 
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 (global-unset-key (kbd "ESC ESC ESC"))

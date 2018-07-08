@@ -1,0 +1,28 @@
+* Keybindings
+  - To write the keybindings in a short way, C is used as CTRL and S for SHIFT
+  - For example [C-c] means CRTL c
+  - ↔ stands for the arrowkey, left and right; ↕ means up and down
+** Org
+|-------+----------------------------+------------------------------------------------|
+| Key   | Where                      | Action                                         |
+|-------+----------------------------+------------------------------------------------|
+| [F2]  | Everywhere                 | Open the agenda                                |
+| [F3]  | Everywhere                 | Open magit-status                              |
+| [tab] | On heading                 | Fold / unfold heading                          |
+| [S-↔] | On heading                 | Cycle todo state                               |
+| [C-d] | somewhere inside a heading | Insert deadline                                |
+| [S-↔] | On a date                  | Cycle through days                             |
+| [S-↕] | On a date                  | Cycle through part of date where the cursor is |
+|-------+----------------------------+------------------------------------------------|
+
+** Magit
+|-----------+-------------------------------+----------------------------------|
+| Key       | Where                         | Action                           |
+|-----------+-------------------------------+----------------------------------|
+| [s]       | On a unstaged file            | Stage the file                   |
+| [c]       | In magit status               | Open commit popup                |
+| [c]       | In commit pupup               | Commit without setting any flags |
+| [C-c C-c] | After typing a commit message | Finalize the commit              |
+| [P]       | In magit status               | Open push popup                  |
+| [u]       | In push popup                 | Push to origin/master            |
+|-----------+-------------------------------+----------------------------------|
