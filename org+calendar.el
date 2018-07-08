@@ -9,6 +9,13 @@
         ("TODO[Jonas]"  . "pink3")
         ("TODO[Marcus]" . "MediumSeaGreen")))
 
+(setq org-agenda-sorting-strategy
+   (quote
+    ((agenda habit-down time-up priority-down category-keep)
+     (todo priority-down todo-state-down)
+     (tags priority-down category-keep)
+     (search category-keep))))
+
 ;; fix flyspell add word to dict
 (defun flyspell-buffer-after-pdict-save (&rest _)
   (flyspell-buffer))

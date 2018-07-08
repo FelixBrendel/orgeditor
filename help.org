@@ -19,6 +19,7 @@
 |-----------+-------------------------------+----------------------------------|
 | Key       | Where                         | Action                           |
 |-----------+-------------------------------+----------------------------------|
+| [q]       | Everywhere                    | Abort, and close                 |
 | [s]       | On a unstaged file            | Stage the file                   |
 | [c]       | In magit status               | Open commit popup                |
 | [c]       | In commit pupup               | Commit without setting any flags |
@@ -26,3 +27,10 @@
 | [P]       | In magit status               | Open push popup                  |
 | [u]       | In push popup                 | Push to origin/master            |
 |-----------+-------------------------------+----------------------------------|
+** Agenda
+|-------+--------------+---------------------------------------|
+| Key   | Where        | Action                                |
+|-------+--------------+---------------------------------------|
+| [q]   | Everywhere   | Abort, and close                      |
+| Click | On TODO item | Navigate to that item in the org file |
+|-------+--------------+---------------------------------------|

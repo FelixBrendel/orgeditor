@@ -43,6 +43,7 @@
   (global-diff-hl-mode t)
   (diff-hl-flydiff-mode t)
   (setq diff-hl-fringe-bmp-function (lambda (&rest _ignore) 'empty-line))
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
   ;; Workaround for displaying correctly in other window
   (use-package frame
     :defer t
