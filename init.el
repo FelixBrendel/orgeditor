@@ -24,6 +24,9 @@
   (package-install 'use-package))
 
 (use-package magit :ensure t)
+(setenv "GIT_ASKPASS" "git-gui--askpass")
+(setenv "SSH_ASKPASS" "git-gui--askpass")
+
 (use-package ivy :ensure t :config
   (ivy-mode 1)
   (setq ivy-on-del-error-function #'ignore))
