@@ -26,6 +26,12 @@
 (use-package magit :ensure t)
 (setenv "GIT_ASKPASS" "git-gui--askpass")
 (setenv "SSH_ASKPASS" "git-gui--askpass")
+(defadvice magit-start-process (after spam-echo-area activate)
+  (set-process-filter
+   magit-this-process
+   `(lambda (process string)
+      (,(process-filter magit-this-process) process string)
+      (message "git> %s" string))))
 
 (use-package ivy :ensure t :config
   (ivy-mode 1)
