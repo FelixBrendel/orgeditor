@@ -23,6 +23,25 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+
+
+(if (version< emacs-version "26.0")
+    (message "is before 26.0 - skipping company-childframe")
+  (use-package company-posframe
+    :ensure t
+    :config
+    (company-posframe-mode 1)))
+
+(use-package company :ensure t :config
+  (setq company-dabbrev-downcase nil)
+  (setq-default company-lighter-base "(C)")
+  (setq-default company-show-numbers          1)
+  (setq-default company-idle-delay            0) ; start completion immediately
+  (setq-default company-minimum-prefix-length 1) ; start completion after 1 character.
+  (setq-default company-tooltip-align-annotations t))
+
+(add-hook 'prog-mode-hook 'company-mode)
+
 (use-package magit :ensure t)
 (setenv "GIT_ASKPASS" "git-gui--askpass")
 (setenv "SSH_ASKPASS" "git-gui--askpass")
@@ -42,6 +61,8 @@
 
 (load-file "~/.emacs.d/tabbar.el")
 (load-file "~/.emacs.d/org+calendar.el")
+(load-file "~/.emacs.d/js.el")
+
 
 (use-package diff-hl
   :ensure t
@@ -234,4 +255,4 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
+    (tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
