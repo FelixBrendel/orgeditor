@@ -63,6 +63,8 @@
 (load-file "~/.emacs.d/org+calendar.el")
 (load-file "~/.emacs.d/js.el")
 
+(use-package rainbow-mode
+  :ensure t)
 
 (use-package diff-hl
   :ensure t

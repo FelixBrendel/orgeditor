@@ -16,6 +16,9 @@
      (tags priority-down category-keep)
      (search category-keep))))
 
+
+(add-hook 'org-mode-hook 'rainbow-mode)
+
 ;; fix flyspell add word to dict
 (defun flyspell-buffer-after-pdict-save (&rest _)
   (flyspell-buffer))
