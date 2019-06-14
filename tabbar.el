@@ -45,7 +45,7 @@
    (global-set-key [C-S-tab] 'tabbar-backward-tab)
 
    (defun tabbar-buffer-groups ()
-     "Returns the list of group names the current buffer belongs to."
+     "Returns the list of group names the current buffer to."
      (list
       (cond
        ;; ADD RULES TO SPLIT BUFFERS IN GROUPS HERE!

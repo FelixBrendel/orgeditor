@@ -63,6 +63,37 @@
 (use-package swiper
   :ensure t)
 
+(use-package multiple-cursors
+  :ensure t)
+
+(defun mark-word-or-next-word-like-this ()
+  "if there is no active region the word under
+   the point will be marked, otherwise the next word is selected."
+  (interactive)
+  (if (region-active-p)
+      ;; then
+      (progn
+        (mc/mark-more-like-this nil 'forwards)
+        (mc/maybe-multiple-cursors-mode)
+        (mc/cycle-forward))
+    ;; else
+    (mc--select-thing-at-point 'word)))
+
+(global-set-key (kbd "C-d") 'mark-word-or-next-word-like-this)
+(global-set-key (kbd "C-S-<down>") 'mc/edit-lines)
+
+(defun duplicate-line()
+  (interactive)
+  (save-excursion
+    (move-beginning-of-line 1)
+    (set-mark (point-marker))
+    (move-end-of-line 1)
+    (copy-region-as-kill (region-beginning) (region-end))
+    (open-line 1)
+    (next-line 1)
+    (yank)))
+
+(global-set-key (kbd "C-M-<down>") 'duplicate-line)
 
 (use-package treemacs
   :ensure t
@@ -172,8 +203,8 @@
 
 (add-hook 'prog-mode-hook
           (lambda ()
-            (ignore-errors
-              (flyspell-prog-mode))
+            ;(ignore-errors
+            ;  (flyspell-prog-mode))
             (company-mode 1)
             (show-paren-mode 1)
             (linum-mode 1)))
@@ -322,7 +353,7 @@
  '(elpy-syntax-check-command "flake8 --ignore=E301,E302,E226,E231")
  '(package-selected-packages
    (quote
-    (treemacs swiper popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
+    (multiple-cursors treemacs swiper popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
 
 
 
