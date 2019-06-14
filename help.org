@@ -1,14 +1,14 @@
-* Keybindings
-  - To write the keybindings in a short way, C is used as CTRL and S for SHIFT
-  - For example [C-c] means CRTL c
-  - ↔ stands for the arrowkey, left and right; ↕ means up and down
+* Key bindings
+  - To write the key bindings in a short way, C is used as CTRL and S for SHIFT
+  - For example [C-c] means CRTL c 
+  - ↔ stands for the arrow key, left and right; ↕ means up and down
 
-|-------+------------+---------------------------|
-| Key   | Where      | Action                    |
-|-------+------------+---------------------------|
-| [C-w] | Everywhere | Kill the buffer / tab     |
-| [C-q] | Everywhere | Kill the active subwindow |
-|-------+------------+---------------------------|
+|-------+------------+----------------------------|
+| Key   | Where      | Action                     |
+|-------+------------+----------------------------|
+| [C-w] | Everywhere | Kill the buffer / tab      |
+| [C-q] | Everywhere | Kill the active sub window |
+|-------+------------+----------------------------|
 
 ** Org
 |-------+----------------------------+------------------------------------------------|

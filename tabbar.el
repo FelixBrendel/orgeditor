@@ -1,35 +1,35 @@
 (use-package tabbar :ensure t :config
- (set-face-attribute
-   'tabbar-unselected nil
-   :background "#282C34"
-   :foreground "gray30"
-   :box nil)
-  (set-face-attribute
-   'tabbar-selected nil
-   :background "#282C34"
-   :foreground "white"
-   :box nil)
-   (set-face-attribute
-    'tabbar-button nil
-    :box '(:line-width 1 :color "#282C34" :style released-button :underline
-                       nil))
-   (set-face-attribute
-    'tabbar-default nil
-    :background "#21252B")
-   (set-face-attribute
-    'tabbar-highlight nil
-    :foreground "white"
-    :box nil
-    :underline nil)
-   (set-face-attribute
-    'tabbar-separator nil
-    :height 0.7)
-   (set-face-attribute
-    'tabbar-modified nil
-    :inherit 'tabbar-default :foreground "green" :box nil)
-   (set-face-attribute
-    'tabbar-selected-modified nil
-    :inherit 'tabbar-default :foreground "green" :box nil :background "#282C34")
+ ;; (set-face-attribute
+ ;;   'tabbar-unselected nil
+ ;;   :background "#282C34"
+ ;;   :foreground "gray30"
+ ;;   :box nil)
+ ;;  (set-face-attribute
+ ;;   'tabbar-selected nil
+ ;;   :background "#282C34"
+ ;;   :foreground "white"
+ ;;   :box nil)
+ ;;   (set-face-attribute
+ ;;    'tabbar-button nil
+ ;;    :box '(:line-width 1 :color "#282C34" :style released-button :underline
+ ;;                       nil))
+ ;;   (set-face-attribute
+ ;;    'tabbar-default nil
+ ;;    :background "#21252B")
+ ;;   (set-face-attribute
+ ;;    'tabbar-highlight nil
+ ;;    :foreground "white"
+ ;;    :box nil
+ ;;    :underline nil)
+ ;;   (set-face-attribute
+ ;;    'tabbar-separator nil
+ ;;    :height 0.7)
+ ;;   (set-face-attribute
+ ;;    'tabbar-modified nil
+ ;;    :inherit 'tabbar-default :foreground "green" :box nil)
+ ;;   (set-face-attribute
+ ;;    'tabbar-selected-modified nil
+ ;;    :inherit 'tabbar-default :foreground "green" :box nil :background "#282C34")
 
    (setq
     tabbar-scroll-left-help-function nil ;don't show help information
@@ -41,14 +41,18 @@
     tabbar-scroll-right-button (quote (("") "")))
 
    (tabbar-mode)
+   (global-set-key [C-tab] 'tabbar-forward-tab)
+   (global-set-key [C-S-tab] 'tabbar-backward-tab)
+
    (defun tabbar-buffer-groups ()
      "Returns the list of group names the current buffer belongs to."
      (list
       (cond
-
        ;; ADD RULES TO SPLIT BUFFERS IN GROUPS HERE!
        ((member (buffer-name)
-                '("*scratch*" "*Messages*" "*Help*" "diary"))
+                '("*scratch*"     "*Messages*"
+                  "*Compile-Log*" "*Flymake log*"
+                  "*Help*" "*eshell-quickrun*" "*Backtrace*" "diary"))
         "Special Buffers" ;; this is a group name
         )
        ((string-match "^magit" (buffer-name))
@@ -67,8 +71,9 @@
   (setq ad-return-value
         (if (and (buffer-modified-p (tabbar-tab-value tab))
                  (buffer-file-name (tabbar-tab-value tab)))
-            (concat " + " (concat ad-return-value " "))
+            (concat " " (concat ad-return-value " "))
           (concat " " (concat ad-return-value " ")))))
+
 ;; Called each time the modification state of the buffer changed.
 (defun ztl-modification-state-change ()
   (tabbar-set-template tabbar-current-tabset nil)

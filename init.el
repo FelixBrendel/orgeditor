@@ -1,9 +1,9 @@
 ;; UTF-8 everywhere
-(setq locale-coding-system 'utf-8)
-(set-terminal-coding-system 'utf-8)
-(set-keyboard-coding-system 'utf-8)
-(set-selection-coding-system 'utf-8)
-(prefer-coding-system 'utf-8)
+;; (setq locale-coding-system 'utf-8)
+;; (set-terminal-coding-system 'utf-8)
+;; (set-keyboard-coding-system 'utf-8)
+;; (set-selection-coding-system 'utf-8)
+;; (prefer-coding-system 'utf-8)
 
 (add-to-list 'load-path "~/.emacs.d/auto-load/")
 (require 'redo+)
@@ -23,12 +23,14 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
-
+(use-package diminish
+  :ensure t)
 
 (if (version< emacs-version "26.0")
     (message "is before 26.0 - skipping company-childframe")
   (use-package company-posframe
     :ensure t
+    :diminish
     :config
     (company-posframe-mode 1)))
 
@@ -40,11 +42,10 @@
   (setq-default company-minimum-prefix-length 1) ; start completion after 1 character.
   (setq-default company-tooltip-align-annotations t))
 
-(add-hook 'prog-mode-hook 'company-mode)
-
 (use-package magit :ensure t)
 (setenv "GIT_ASKPASS" "git-gui--askpass")
 (setenv "SSH_ASKPASS" "git-gui--askpass")
+
 (defadvice magit-start-process (after spam-echo-area activate)
   (set-process-filter
    magit-this-process
@@ -52,45 +53,64 @@
       (,(process-filter magit-this-process) process string)
       (message "git> %s" string))))
 
-(use-package ivy :ensure t :config
+(use-package ivy
+  :ensure t
+  :diminish
+  :config
   (ivy-mode 1)
   (setq ivy-on-del-error-function #'ignore))
-(use-package powerline :ensure t)
-(powerline-default-theme)
 
+;(use-package powerline :ensure t)
+;(powerline-default-theme)
+
+
+(use-package solarized-theme
+  :ensure t
+  :config
+  (load-theme 'solarized-dark t)
+  (set-face-attribute 'font-lock-comment-face nil :italic t)
+  (set-face-attribute 'font-lock-doc-face nil :italic t))
 
 (load-file "~/.emacs.d/tabbar.el")
 (load-file "~/.emacs.d/org+calendar.el")
 (load-file "~/.emacs.d/js.el")
+(load-file "~/.emacs.d/py.el")
 
 (use-package rainbow-mode
-  :ensure t)
+  :diminish
+  :ensure t
+  :hook (prog-mode . rainbow-mode))
 
 (use-package diff-hl
   :ensure t
   :config
-  (global-diff-hl-mode t)
-  (diff-hl-flydiff-mode t)
-  (setq diff-hl-fringe-bmp-function (lambda (&rest _ignore) 'empty-line))
-  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-  ;; Workaround for displaying correctly in other window
-  (use-package frame
-    :defer t
-    :config
-    (progn
-      (setq window-divider-default-places 'right-only) ;Default 'right-only
-      ;; https://debbugs.gnu.org/cgi/bugreport.cgi?bug=27830#20
-      ;; Workaround on emacs 26+ to prevent fringe truncation. You need to use
-      ;; either scroll bars or window dividers to prevent that.
-      ;; I dislike the default face of `window-divider', so I customize that in my
-      ;; `smyx-theme`.
-      (setq window-divider-default-right-width 1) ;Default 6
-      (window-divider-mode 1))))
+  (global-diff-hl-mode)
+  (diff-hl-flydiff-mode)
+  (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh))
 
-(use-package org-bullets :ensure t)
-(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
-(use-package atom-one-dark-theme :ensure t)
-(load-theme 'atom-one-dark t)
+
+(use-package org-bullets
+  :ensure t
+  :hook (org-mode . org-bullets-mode))
+
+(use-package quickrun
+  :ensure t)
+
+(global-set-key (kbd "<f5>") 'quickrun-shell)
+
+
+;; parenthesis stuff
+(use-package rainbow-delimiters
+  :ensure t
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(add-hook 'prog-mode-hook
+          (lambda ()
+            (flyspell-prog-mode)
+            (company-mode 1)
+            (show-paren-mode 1)
+            (linum-mode 1)))
+
 
 ;; Don't litter the direcory with backup files but keep them in another folder
 (setq backup-directory-alist `(("." . "~/.emacs-saves")))
@@ -208,6 +228,7 @@
   (define-key org-agenda-mode-map (kbd "<mouse-1>") 'org-agenda-goto-mouse))
 
 (with-eval-after-load 'flyspell
+  (setq flyspell-prog-text-faces '(font-lock-doc-face))
   (define-key flyspell-mouse-map (kbd "<mouse-3>") 'flyspell-correct-word))
 
 (defadvice find-file-read-args (around find-file-read-args-always-use-dialog-box act)
@@ -255,6 +276,56 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(elpy-syntax-check-command "flake8 --ignore=E301,E302")
  '(package-selected-packages
    (quote
-    (tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
+    (popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
+
+
+
+
+
+
+
+
+
+
+
+
+(defvar emax-root (concat (expand-file-name "~") "/emax"))
+(defvar emax-bin (concat emax-root "/bin"))
+(defvar emax-bin64 (concat emax-root "/bin64"))
+(defvar emax-mingw64 (concat emax-root "/mingw64/bin"))
+(defvar emax-lisp (concat emax-root "/lisp"))
+
+;; Changes made for Aspell
+(setq-default ispell-program-name "~/emax/mingw64/bin/aspell.exe")
+(setq-default ispell-extra-args  '("--sug-mode=ultra"))
+;; (setq ispell-dictionary "en_US")
+
+;; Set "DICTDIR" variable
+(setenv "DICTDIR" (concat emax-mingw64 "/lib/aspell-0.60/"))
+
+
+;; Automatically enable flyspell-mode in text-mode
+;;(require 'flyspell)
+(add-hook 'text-mode-hook 'flyspell-mode)
+;(setq text-mode-hook (lambda () (flyspell-mode t)))
+
+(add-hook 'flyspell-mode-hook      'flyspell-buffer)
+(add-hook 'flyspell-prog-mode-hook 'flyspell-buffer)
+;;(setq text-mode-hook '(lambda()
+;;                        (flyspell-mode t)))
+
+;;(dolist (hook '(text-mode-hook))
+;;  (add-hook hook (lambda () (flyspell-mode 1))))
+;;(dolist (hook '(change-log-mode-hook log-edit-mode-hook))
+;;  (add-hook hook (lambda () (flyspell-mode -1))))
+
+;;(setq flyspell-issue-message-flag nil)
+
+;;(require 'auto-dictionary)
+;;(add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
+
+
+(require 'ispell)
