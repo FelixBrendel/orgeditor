@@ -268,6 +268,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(default ((t (:family "Cousine" :foundry "outline" :slant normal :weight normal :height 113 :width normal))))
+ '(font-lock-doc-face ((t (:foreground "#d33682" :slant italic))))
  '(org-level-1 ((t (:inherit outline-1 :height 1.8))))
  '(org-level-2 ((t (:inherit outline-2 :height 1.5))))
  '(org-level-3 ((t (:inherit outline-3 :height 1.3)))))
