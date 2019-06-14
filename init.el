@@ -60,6 +60,73 @@
   (ivy-mode 1)
   (setq ivy-on-del-error-function #'ignore))
 
+(use-package swiper
+  :ensure t)
+
+
+(use-package treemacs
+  :ensure t
+  :defer t
+  :init
+  (with-eval-after-load 'winum
+    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
+  :config
+  (progn
+    (setq treemacs-collapse-dirs                 (if (executable-find "python3") 3 0)
+          treemacs-deferred-git-apply-delay      0.5
+          treemacs-display-in-side-window        t
+          treemacs-eldoc-display                 t
+          treemacs-file-event-delay              5000
+          treemacs-file-follow-delay             0.2
+          treemacs-follow-after-init             t
+          treemacs-git-command-pipe              ""
+          treemacs-goto-tag-strategy             'refetch-index
+          treemacs-indentation                   2
+          treemacs-indentation-string            " "
+          treemacs-is-never-other-window         nil
+          treemacs-max-git-entries               5000
+          treemacs-missing-project-action        'ask
+          treemacs-no-png-images                 nil
+          treemacs-no-delete-other-windows       t
+          treemacs-project-follow-cleanup        nil
+          treemacs-persist-file                  (expand-file-name ".cache/treemacs-persist" user-emacs-directory)
+          treemacs-recenter-distance             0.1
+          treemacs-recenter-after-file-follow    nil
+          treemacs-recenter-after-tag-follow     nil
+          treemacs-recenter-after-project-jump   'always
+          treemacs-recenter-after-project-expand 'on-distance
+          treemacs-show-cursor                   nil
+          treemacs-show-hidden-files             t
+          treemacs-silent-filewatch              nil
+          treemacs-silent-refresh                nil
+          treemacs-sorting                       'alphabetic-desc
+          treemacs-space-between-root-nodes      t
+          treemacs-tag-follow-cleanup            t
+          treemacs-tag-follow-delay              1.5
+          treemacs-width                         35)
+
+    ;; The default width and height of the icons is 22 pixels. If you are
+    ;; using a Hi-DPI display, uncomment this to double the icon size.
+    ;;(treemacs-resize-icons 44)
+
+    (treemacs-follow-mode t)
+    (treemacs-filewatch-mode t)
+    (treemacs-fringe-indicator-mode t)
+    (pcase (cons (not (null (executable-find "git")))
+                 (not (null (executable-find "python3"))))
+      (`(t . t)
+       (treemacs-git-mode 'deferred))
+      (`(t . _)
+       (treemacs-git-mode 'simple))))
+  :bind
+  (:map global-map
+        ("M-0"       . treemacs-select-window)
+        ("C-x t 1"   . treemacs-delete-other-windows)
+        ("C-x t t"   . treemacs)
+        ("C-x t B"   . treemacs-bookmark)
+        ("C-x t C-t" . treemacs-find-file)
+        ("C-x t M-t" . treemacs-find-tag)))
+
 ;(use-package powerline :ensure t)
 ;(powerline-default-theme)
 
@@ -98,7 +165,6 @@
 
 (global-set-key (kbd "<f5>") 'quickrun-shell)
 
-
 ;; parenthesis stuff
 (use-package rainbow-delimiters
   :ensure t
@@ -106,7 +172,8 @@
 
 (add-hook 'prog-mode-hook
           (lambda ()
-            (flyspell-prog-mode)
+            (ignore-errors
+              (flyspell-prog-mode))
             (company-mode 1)
             (show-paren-mode 1)
             (linum-mode 1)))
@@ -134,30 +201,6 @@
 (setq gc-cons-threshold (eval-when-compile (* 1024 1024 1024)))
 (run-with-idle-timer 2 t (lambda () (garbage-collect)))
 
-;; Searching
-;; auto overwrap i-search
-;; Prevents issue where you have to press backspace twice when
-;; trying to remove the first character that fails a search
-(define-key isearch-mode-map [remap isearch-delete-char] 'isearch-del-char)
-
-(defadvice isearch-search (after isearch-no-fail activate)
-  (unless isearch-success
-    (ad-disable-advice 'isearch-search 'after 'isearch-no-fail)
-    (ad-activate 'isearch-search)
-    (isearch-repeat (if isearch-forward 'forward))
-    (ad-enable-advice 'isearch-search 'after 'isearch-no-fail)
-    (ad-activate 'isearch-search)))
-
-
-;; search for highlighted if exist
-(defun jrh-isearch-with-region ()
-  "Use region as the isearch text."
-  (when mark-active
-    (let ((region (funcall region-extract-function nil)))
-      (deactivate-mark)
-      (isearch-push-state)
-      (isearch-yank-string region))))
-(add-hook 'isearch-mode-hook #'jrh-isearch-with-region)
 
 ;; Save hooks
 (add-hook 'focus-out-hook          (lambda () (when (and buffer-file-name (buffer-modified-p)) (save-buffer))))
@@ -237,8 +280,7 @@
      ad-do-it))
 (global-set-key (kbd "C-o") 'find-file)
 
-(global-set-key (kbd "C-f") 'isearch-forward)
-(define-key isearch-mode-map "\C-f" 'isearch-repeat-forward)
+(global-set-key (kbd "C-f") 'swiper)
 
 (global-set-key (kbd "<S-down-mouse-1>") 'mouse-save-then-kill) ;; Extend selectin by shift clicking
 (global-set-key (kbd "C-s") 'save-buffer)
@@ -277,10 +319,10 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(elpy-syntax-check-command "flake8 --ignore=E301,E302")
+ '(elpy-syntax-check-command "flake8 --ignore=E301,E302,E226,E231")
  '(package-selected-packages
    (quote
-    (popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
+    (treemacs swiper popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
 
 
 
