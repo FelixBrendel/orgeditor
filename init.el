@@ -80,7 +80,7 @@
     (mc--select-thing-at-point 'word)))
 
 (global-set-key (kbd "C-d") 'mark-word-or-next-word-like-this)
-(global-set-key (kbd "C-S-<down>") 'mc/edit-lines)
+(global-set-key (kbd "C-M-<down>") 'mc/edit-lines)
 
 (defun duplicate-line()
   (interactive)
@@ -93,7 +93,7 @@
     (next-line 1)
     (yank)))
 
-(global-set-key (kbd "C-M-<down>") 'duplicate-line)
+(global-set-key (kbd "S-M-<down>") 'duplicate-line)
 
 (use-package treemacs
   :ensure t
