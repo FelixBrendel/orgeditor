@@ -161,6 +161,7 @@
 ;(use-package powerline :ensure t)
 ;(powerline-default-theme)
 
+(desktop-save-mode 1)
 
 (use-package solarized-theme
   :ensure t
@@ -354,13 +355,6 @@
  '(package-selected-packages
    (quote
     (multiple-cursors treemacs swiper popup-imenu quickrun elpy minimap diminish solarized-theme reykjavik-theme rainbow-delimiters tide company atom-one-dark-theme org-bullets diff-hl tabbar powerline ivy magit use-package))))
-
-
-
-
-
-
-
 
 
 

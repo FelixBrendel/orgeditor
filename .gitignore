@@ -2,3 +2,8 @@ elpa/
 server/
 /diary
 /ede-projects.el
+/.emacs.desktop
+*.lock
+/transient/history.el
+/.cache/treemacs-persist
+eshell/*
